@@ -31,13 +31,15 @@ pipeline {
                 script {
                     // Danh sách các thư mục chứa service
                     def services = ['accounts', 'cards', 'configserver', 'eurekaserver', 'gatewayserver', 'loans']
-
+                    withCredentials([usernamePassword(credentialsId: 'Dockerhub-ID', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                                            sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
                     for (service in services) {
                         dir(service) {
                             echo "Building Docker image for ${service}"
                             sh 'rm -rf target'
-                            sh './mvnw compile jib:dockerBuild -Djib.to.image=${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}'
-                            sh 'docker push ${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}'
+                            sh "./mvnw compile jib:dockerBuild -Djib.to.image=${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}"
+                            sh "docker push ${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}"
+
                         }
                     }
                 }
