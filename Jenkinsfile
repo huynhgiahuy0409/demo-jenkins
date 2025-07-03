@@ -43,5 +43,13 @@ pipeline {
             }
         }
     }
-
+    
+    post {
+        success {
+            echo 'Build tất cả services thành công.'
+        }
+        failure {
+            echo 'Build thất bại ở một service nào đó.'
+        }
+    }
 }
