@@ -55,7 +55,7 @@ pipeline {
 
                         sh "rm -rf ${targetDir}"
                         sh "mkdir -p ${targetDir}"
-                        sh "cp -r dockercompose/* ${targetDir}/"
+                        sh "cp -r docker-compose/* ${targetDir}/"
                     }
                 }
             }
