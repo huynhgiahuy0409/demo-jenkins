@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_USER = 'huynhgiahuy492'
         IMAGE_VERSION = 's9'
+        DEPLOY_ENV = 'default'
     }
 
     stages {
@@ -55,14 +56,14 @@ pipeline {
 
                         sh "rm -rf ${targetDir}"
                         sh "mkdir -p ${targetDir}"
-                        sh "cp -r docker-compose/* ${targetDir}/"
+                        sh "cp -r docker-compose/${DEPLOY_ENV}/* ${targetDir}/"
                     }
                 }
             }
 
             stage('Run Docker Compose from copied folder') {
                 steps {
-                    dir('/Users/huyhuynh/Documents/project/Workspaces/Microservices/deployments/demo') {
+                    dir('/Users/huyhuynh/Documents/project/Workspaces/Microservices/deployments/demo/') {
                         sh 'docker compose up -d'
                     }
                 }
