@@ -35,7 +35,7 @@ pipeline {
                     for (service in services) {
                         dir(service) {
                             echo "Building Docker image for ${service}"
-                            sh 'rm -rf /target'
+                            sh 'rm -rf target'
                             sh './mvnw compile jib:dockerBuild -X'
                         }
                     }
