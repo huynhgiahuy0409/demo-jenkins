@@ -29,31 +29,14 @@ pipeline {
         stage('Build & Push with Jib') {
             // Steps to perform in this stage
             steps {
-                // Script to build and push images
                 script {
-                    // List of services to build and push
-                    def services = ['configserver', 'eurekaserver', 'gatewayserver', 'accounts', 'loans', 'cards']
+                    // Danh sách các thư mục chứa service
+                    def services = ['accounts', 'cards', 'configserver', 'eurekaserver', 'gatewayserver', 'loans']
 
-                    // Loop through each service
                     for (service in services) {
-                        // Construct the image name
-                        def imageName = "${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}"
-
-                        // Echo a message to indicate building and pushing
-                        echo "🚀 Building & pushing ${imageName} using Jib..."
-
-                        // Change directory to the service directory
                         dir(service) {
-                            // Run the command to build and push the image
-                            sh """
-                                // Compile and build the image with Jib
-                                ./mvn compile jib:dockerBuild \
-                                // Set the image name
-                                -Djib.to.image=${imageName} \
-                                // Set the Docker Hub credentials
-                                -Djib.to.auth.username=${DOCKERHUB_CREDENTIALS_USR} \
-                                -Djib.to.auth.password=${DOCKERHUB_CREDENTIALS_PSW}
-                            """
+                            echo "Building Docker image for ${service}"
+                            sh './mvnw compile jib:dockerBuild'
                         }
                     }
                 }
@@ -61,12 +44,4 @@ pipeline {
         }
     }
 
-    // Post-build actions
-    post {
-        // Always perform the following action
-        always {
-            // Logout from Docker Hub
-            sh "docker logout"
-        }
-    }
 }
