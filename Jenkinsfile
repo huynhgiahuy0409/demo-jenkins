@@ -39,6 +39,34 @@ pipeline {
                 } // <-- đóng block script
             }
         }
+
+//         stage('Copy dockercompose to Deploy Server') {
+//             steps {
+//                 sshagent(['deploy-server-key']) {
+//                     sh 'scp -r dockercompose/ deployuser@192.168.1.100:/home/deployuser/'
+//                 }
+//             }
+//         }
+
+            stage('Copy dockercompose to local deploy folder') {
+                steps {
+                    script {
+                        def targetDir = '/Users/huyhuynh/Documents/project/Workspaces/Microservices/deployments/demo'
+
+                        sh "rm -rf ${targetDir}"
+                        sh "mkdir -p ${targetDir}"
+                        sh "cp -r dockercompose/* ${targetDir}/"
+                    }
+                }
+            }
+
+            stage('Run Docker Compose from copied folder') {
+                steps {
+                    dir('/Users/huyhuynh/Documents/project/Workspaces/Microservices/deployments/demo') {
+                        sh 'docker compose up -d'
+                    }
+                }
+            }
     }
 
     post {
