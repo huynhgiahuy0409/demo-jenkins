@@ -1,58 +1,52 @@
-// Define the pipeline
 pipeline {
-    // Specify the agent to run the pipeline on
     agent any
 
-    // Define environment variables
     environment {
-        // Credentials for Docker Hub
-        DOCKERHUB_CREDENTIALS = credentials('Dockerhub-ID') // Đặt trong Jenkins
-        // Docker Hub username
         DOCKERHUB_USER = 'huynhgiahuy492'
         IMAGE_VERSION = 's9'
     }
 
-    // Define stages of the pipeline
     stages {
-        // Stage to clone the repository
         stage('Clone Repository') {
-            // Steps to perform in this stage
             steps {
-                // Echo a message to indicate cloning
                 echo 'Cloning source code...'
-                // Jenkins will automatically clone the repository if the pipeline is triggered from Git
-                // Jenkins sẽ tự clone nếu pipeline từ Git
             }
         }
-        // Stage to build and push images with Jib
+
         stage('Build & Push with Jib') {
-            // Steps to perform in this stage
             steps {
                 script {
-                    // Danh sách các thư mục chứa service
                     def services = ['accounts', 'cards', 'configserver', 'eurekaserver', 'gatewayserver', 'loans']
-                    withCredentials([usernamePassword(credentialsId: 'Dockerhub-ID', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
-                    for (service in services) {
-                        dir(service) {
-                            echo "Building Docker image for ${service}"
-                            sh 'rm -rf target'
-                            sh "./mvnw compile jib:dockerBuild -Djib.to.image=${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}"
-                            sh "docker push ${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}"
 
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'Dockerhub-ID',
+                            usernameVariable: 'DOCKERHUB_USER',
+                            passwordVariable: 'DOCKERHUB_PASS'
+                        )
+                    ]) {
+                        sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
+
+                        for (service in services) {
+                            dir(service) {
+                                echo "Building Docker image for ${service}"
+                                sh 'rm -rf target'
+                                sh "./mvnw compile jib:dockerBuild -Djib.to.image=$DOCKERHUB_USER/${service}:${IMAGE_VERSION}"
+                                sh "docker push $DOCKERHUB_USER/${service}:${IMAGE_VERSION}"
+                            }
                         }
-                    }
-                }
+                    } // <-- đóng đúng block withCredentials
+                } // <-- đóng block script
             }
         }
     }
-    
+
     post {
         success {
-            echo 'Build tất cả services thành công.'
+            echo '✅ Build tất cả services thành công.'
         }
         failure {
-            echo 'Build thất bại ở một service nào đó.'
+            echo '❌ Build thất bại ở một service nào đó.'
         }
     }
 }
