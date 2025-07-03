@@ -24,7 +24,13 @@ pipeline {
                 // Jenkins sẽ tự clone nếu pipeline từ Git
             }
         }
-
+        stage('Debug PATH') {
+            steps {
+                sh 'echo PATH=$PATH'
+                sh 'which docker'
+                sh 'docker info'
+            }
+        }
         // Stage to build and push images with Jib
         stage('Build & Push with Jib') {
             // Steps to perform in this stage
