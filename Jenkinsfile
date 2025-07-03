@@ -37,7 +37,7 @@ pipeline {
                             echo "Building Docker image for ${service}"
                             sh 'rm -rf target'
                             sh './mvnw compile jib:dockerBuild -Djib.to.image=${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}'
-                            sh "docker push ${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}"
+                            sh 'docker push ${DOCKERHUB_USER}/${service}:${IMAGE_VERSION}'
                         }
                     }
                 }
