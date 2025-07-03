@@ -63,7 +63,7 @@ pipeline {
 
             stage('Run Docker Compose from copied folder') {
                 steps {
-                    dir('/Users/huyhuynh/Documents/project/Workspaces/Microservices/deployments/demo/') {
+                    dir("/Users/huyhuynh/Documents/project/Workspaces/Microservices/deployments/demo/${DEPLOY_ENV}/") {
                         sh 'docker compose up -d'
                     }
                 }
