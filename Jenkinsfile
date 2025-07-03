@@ -6,7 +6,7 @@ pipeline {
     // Define environment variables
     environment {
         // Credentials for Docker Hub
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Đặt trong Jenkins
+        DOCKERHUB_CREDENTIALS = credentials('Dockerhub-ID') // Đặt trong Jenkins
         // Docker Hub username
         DOCKERHUB_USER = 'huynhgiahuy492'
         IMAGE_VERSION = 's9'
@@ -32,7 +32,7 @@ pipeline {
                     // Danh sách các thư mục chứa service
                     def services = ['accounts', 'cards', 'configserver', 'eurekaserver', 'gatewayserver', 'loans']
                     withCredentials([usernamePassword(credentialsId: 'Dockerhub-ID', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                                            sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
+                    sh 'echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin'
                     for (service in services) {
                         dir(service) {
                             echo "Building Docker image for ${service}"
